@@ -9,8 +9,8 @@ defmodule Clarkia.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       dialyzer: [
-        plt_core_path: "priv/plts",
-        plt_local_path: "priv/plts",
+        plt_file: {:no_warn, "priv/plts/clarkia.plt"},
+        plt_add_apps: [:mix, :ex_unit],
         list_unused_filters: true
       ],
       aliases: aliases(),
