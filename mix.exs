@@ -8,6 +8,11 @@ defmodule Clarkia.MixProject do
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      dialyzer: [
+        plt_core_path: "priv/plts",
+        plt_local_path: "priv/plts",
+        list_unused_filters: true
+      ],
       aliases: aliases(),
       deps: deps()
     ]
