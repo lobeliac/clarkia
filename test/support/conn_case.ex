@@ -20,14 +20,14 @@ defmodule ClarkiaWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint ClarkiaWeb.Endpoint
-
       use ClarkiaWeb, :verified_routes
 
       # Import conveniences for testing with connections
-      import Plug.Conn
-      import Phoenix.ConnTest
       import ClarkiaWeb.ConnCase
+      import Phoenix.ConnTest
+      import Plug.Conn
+
+      @endpoint ClarkiaWeb.Endpoint
     end
   end
 
