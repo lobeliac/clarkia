@@ -1,0 +1,89 @@
+name: "Analyse, Build & Test"
+
+on:
+  push:
+    branches: [ "development" ]
+  pull_request:
+    branches: [ "development" ]
+env:
+  MIX_ENV: test
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    services:
+      db:
+        image: postgres:16
+        ports: ['5432:5432']
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.16.0'
+        otp-version: '26.2.1'
+
+    - name: Checkout Source
+      uses: actions/checkout@v4
+
+    - name: Install test dependencies
+      run: |
+         mix local.hex --force
+         mix local.rebar --force
+         mix deps.get --only test
+
+    - name: Restore PLT cache
+      uses: actions/cache/restore@v3
+      with:
+        key: |
+          plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
+        path: |
+          priv/plts
+
+    - name: Create PLTs
+      if: steps.plt_cache.outputs.cache-hit != 'true'
+      run: mix dialyzer --plt
+
+    - name: Save PLT cache
+      id: plt_cache_save
+      uses: actions/cache/save@v3
+      if: steps.plt_cache.outputs.cache-hit != 'true'
+      with:
+        key: |
+          plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+        path: |
+          priv/plts
+
+    - name: Check Formatting
+      run: mix format --check-formatted
+
+    - name: Run dialyzer
+      run: mix dialyzer --no-compile --format github
+
+    - name: Audit Check
+      run: |
+         mix deps.audit
+         mix hex.audit
+
+    - name: Credo Code Analysis
+      run: mix credo
+
+    - name: Sobelow Code Analysis
+      run: mix sobelow --config
+
+    - name: Compiles without Warnings
+      run: mix compile --warnings-as-errors
+
+    - name: Run Tests
+      run: mix test --trace
