@@ -8,6 +8,11 @@ defmodule Clarkia.MixProject do
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/clarkia.plt"},
+        plt_add_apps: [:mix, :ex_unit],
+        list_unused_filters: true
+      ],
       aliases: aliases(),
       deps: deps()
     ]
@@ -47,6 +52,11 @@ defmodule Clarkia.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
+      {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
       {:bandit, ">= 0.0.0"}
     ]
   end
