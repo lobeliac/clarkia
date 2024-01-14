@@ -24,7 +24,7 @@ defmodule Clarkia.MixProject do
   def application do
     [
       mod: {Clarkia.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :os_mon]
     ]
   end
 
@@ -43,6 +43,7 @@ defmodule Clarkia.MixProject do
       {:phoenix_live_view, "~> 0.20.1"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.2"},
+      {:ecto_psql_extras, "~> 0.7.15"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
