@@ -83,6 +83,8 @@ defmodule ClarkiaWeb do
     quote do
       # HTML escaping functionality
       # Core UI components and translation
+      use PhoenixHTMLHelpers
+
       import ClarkiaWeb.CoreComponents
       import ClarkiaWeb.Gettext
       import Phoenix.HTML
